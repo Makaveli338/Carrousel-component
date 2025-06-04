@@ -21,8 +21,8 @@
           <!-- New Popup Content -->
           <div class="bg-white">
             
-            <Transition name="fade" mode="out-in">
-              <div :key="currentSlide" class="space-y-5 w-full">
+            <Transition :name="transitionName" mode="out-in">
+              <div :key="currentSlide" class="space-y-8 w-full">
                 <!-- Image -->
                 <div class="relative">
                     <div
@@ -71,35 +71,33 @@
   
   <script setup>
   import { ref, onMounted, onUnmounted } from 'vue';
-import {
-  Dialog,
-  DialogPanel,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuItems,
-  Switch,
-  TransitionChild,
-  TransitionRoot,
-  Popover
-} from '@headlessui/vue';
+  import {
+    Dialog,
+    DialogPanel,
+    Menu,
+    MenuButton,
+    MenuItem,
+    MenuItems,
+    Switch,
+    TransitionChild,
+    TransitionRoot,
+    Popover
+  } from '@headlessui/vue';
+  
+  const transitionName = ref('slide-left');
   
   const heroSlides = ref([
     {
       id: 1,
       title: 'Enjoy discounted prices for school students.',
-      description: [
-        'between 1st June - 31st July 2025',
-      ],
-      image: '/School-trip.png'
+      description: ['between 1st June - 31st July 2025'],
+      image: '/School-trip.png',
     },
     {
       id: 2,
       title: 'Enjoy discounted prices for school students.',
-      description: [
-        'between 1st June - 31st July 2025'
-      ],
-      image: '/School-trip.png'
+      description: ['between 1st June - 31st July 2025'],
+      image: '/School-trip.png',
     }
   ]);
   
@@ -107,14 +105,17 @@ import {
   const slideInterval = ref(null);
   
   const nextSlide = () => {
+    transitionName.value = 'slide-left';
     currentSlide.value = (currentSlide.value + 1) % heroSlides.value.length;
   };
   
   const prevSlide = () => {
+    transitionName.value = 'slide-right';
     currentSlide.value =
       currentSlide.value === 0 ? heroSlides.value.length - 1 : currentSlide.value - 1;
   };
   
+  // Auto-slide every 8 seconds
   onMounted(() => {
     slideInterval.value = setInterval(nextSlide, 8000);
   });
@@ -122,4 +123,36 @@ import {
   onUnmounted(() => {
     if (slideInterval.value) clearInterval(slideInterval.value);
   });
+
+
   </script>
+  
+<style scoped>
+.slide-left-enter-active,
+.slide-right-enter-active,
+.slide-left-leave-active,
+.slide-right-leave-active {
+  transition: transform 0.4s ease, opacity 0.4s ease;
+  width: 100%;
+}
+
+.slide-left-enter-from {
+  transform: translateX(100%);
+  opacity: 0;
+}
+.slide-left-leave-to {
+  transform: translateX(-100%);
+  opacity: 0;
+}
+
+.slide-right-enter-from {
+  transform: translateX(-100%);
+  opacity: 0;
+}
+.slide-right-leave-to {
+  transform: translateX(100%);
+  opacity: 0;
+}
+
+
+</style>
